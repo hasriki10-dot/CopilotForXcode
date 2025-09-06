@@ -1,0 +1,102 @@
+import { useState } from "react"; import { Card, CardContent } from "@/components/ui/card"; import { Button } from "@/components/ui/button"; import { Input } from "@/components/ui/input"; import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select"; import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"; import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
+
+export default function VisaSystem() { const [applications, setApplications] = useState([]); const [form, setForm] = useState({ name: "", passport: "", sponsor: "", job: "", status: "Proses", documents: { paspor: null, foto: null, sponsorLetter: null }, });
+
+const handleFileChange = (e, type) => { setForm({ ...form, documents: { ...form.documents, [type]: e.target.files[0] }, }); };
+
+const handleSubmit = () => { setApplications([...applications, { ...form, id: Date.now() }]); setForm({ name: "", passport: "", sponsor: "", job: "", status: "Proses", documents: { paspor: null, foto: null, sponsorLetter: null }, }); };
+
+return ( <div className="p-6 grid gap-6"> <h1 className="text-2xl font-bold">Sistem Pengolahan Data Visa</h1>
+
+<Tabs defaultValue="form">
+    <TabsList>
+      <TabsTrigger value="form">Input Data Pemohon</TabsTrigger>
+      <TabsTrigger value="list">Daftar Pemohon</TabsTrigger>
+    </TabsList>
+
+    <TabsContent value="form">
+      <Card className="p-4">
+        <CardContent className="grid gap-4">
+          <Input
+            placeholder="Nama Lengkap"
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+          />
+          <Input
+            placeholder="Nomor Paspor"
+            value={form.passport}
+            onChange={(e) => setForm({ ...form, passport: e.target.value })}
+          />
+          <Input
+            placeholder="Perusahaan Sponsor"
+            value={form.sponsor}
+            onChange={(e) => setForm({ ...form, sponsor: e.target.value })}
+          />
+          <Input
+            placeholder="Jabatan"
+            value={form.job}
+            onChange={(e) => setForm({ ...form, job: e.target.value })}
+          />
+
+          <Select onValueChange={(value) => setForm({ ...form, status: value })}>
+            <SelectTrigger>
+              <SelectValue placeholder="Pilih Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Proses">Proses</SelectItem>
+              <SelectItem value="Disetujui">Disetujui</SelectItem>
+              <SelectItem value="Ditolak">Ditolak</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <div className="grid gap-2">
+            <label>Upload Paspor</label>
+            <Input type="file" onChange={(e) => handleFileChange(e, "paspor")} />
+            <label>Upload Foto</label>
+            <Input type="file" onChange={(e) => handleFileChange(e, "foto")} />
+            <label>Upload Surat Sponsor</label>
+            <Input type="file" onChange={(e) => handleFileChange(e, "sponsorLetter")} />
+          </div>
+
+          <Button onClick={handleSubmit}>Simpan Data</Button>
+        </CardContent>
+      </Card>
+    </TabsContent>
+
+    <TabsContent value="list">
+      <Card className="p-4">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Nama</TableHead>
+              <TableHead>Paspor</TableHead>
+              <TableHead>Sponsor</TableHead>
+              <TableHead>Jabatan</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Dokumen</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {applications.map((app) => (
+              <TableRow key={app.id}>
+                <TableCell>{app.name}</TableCell>
+                <TableCell>{app.passport}</TableCell>
+                <TableCell>{app.sponsor}</TableCell>
+                <TableCell>{app.job}</TableCell>
+                <TableCell>{app.status}</TableCell>
+                <TableCell>
+                  {app.documents.paspor && <span>Paspor ✔️ </span>}
+                  {app.documents.foto && <span>Foto ✔️ </span>}
+                  {app.documents.sponsorLetter && <span>Surat Sponsor ✔️</span>}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Card>
+    </TabsContent>
+  </Tabs>
+</div>
+
+); }
+
